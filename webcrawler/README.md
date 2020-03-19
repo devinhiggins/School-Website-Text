@@ -1,7 +1,6 @@
-School Text Webcrawler
-----------------------
+# Webcrawler 
 
-The School Text project webscrawler is written in python and utilizes the Scrapy package.  It was written to be generic enough to crawl over multiple sites with varying HTML and scripting standards.
+This webscrawler is written in python and utilizes the Scrapy package.  It was written to be generic enough to crawl over multiple sites with varying HTML and scripting standards.
 
 As such, the crawler includes the following features to assist in retrieving relevant text from each website:
 
