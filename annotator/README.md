@@ -11,7 +11,7 @@ Annotation tool allows you to easily mark positive and negative school homepages
 
 - Python 3.6 or higher, with Tk GUI toolkit (Tkinter)
 
-  - <u>***Tkinter*** known issues</u>
+  - ***Tkinter*** known issues
 
     - Ubuntu
 
@@ -73,7 +73,7 @@ Annotation tool allows you to easily mark positive and negative school homepages
 
   - `geckodriver` may be downloaded from its GitHub repo ([link](https://github.com/mozilla/geckodriver/releases))
 
-  - <u>macOS 10.15 Catalina or higher</u>
+  - macOS 10.15 Catalina or higher
 
     Due to the requirement from Apple that all programs must be notarized, geckodriver will not work on Catalina if you manually download it through another notarized program such as your browser. Instead please use Homebrew ([link](https://brew.sh/)) to install `geckodriver`
 
