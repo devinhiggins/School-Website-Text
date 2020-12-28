@@ -58,7 +58,7 @@ Annotation tool allows you to easily mark positive and negative school homepages
 
       ```bash
       $ env \
-      	PATH="$(brew --prefix tcl-tk)/bin:$PATH" \
+        PATH="$(brew --prefix tcl-tk)/bin:$PATH" \
         LDFLAGS="-L$(brew --prefix tcl-tk)/lib" \
         CPPFLAGS="-I$(brew --prefix tcl-tk)/include" \
         PKG_CONFIG_PATH="$(brew --prefix tcl-tk)/lib/pkgconfig" \
