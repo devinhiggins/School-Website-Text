@@ -1,45 +1,110 @@
+import errno
+import os
 import sys
 import tkinter
+import argparse
+import pandas as pd
+from pathlib import Path
 from time import sleep
 from tkinter import ttk
 from selenium import webdriver
-from jhp import extract_school_name_city_zip, safe_get, search_alink_extract, extract_national_school_name_city_zip
+from Tools import safe_get, search_alink_extract, get_file_name_from_url
 
-BYPASS_SCHOOL_LIST = "/Users/jhp/MSU/project/schooltext/jhp/data/national1_dump/NationalByPassed.csv"
-COMPLETED_SCHOOL_LIST = "/Users/jhp/MSU/project/schooltext/jhp/data/national1_dump/NationalNewDone.csv"
-POS_PATH_SAVE = '/Users/jhp/MSU/project/schooltext/jhp/data/national1_dump/pos_pages/'
-NEG_PATH_SAVE = '/Users/jhp/MSU/project/schooltext/jhp/data/national1_dump/neg_pages/'
+"""
+    Annotation Tool
+    
+    Args:
+        data_dir (str) : Absolute path to data directory where 
+            input CSV file resides. 
+        
+            "pos_pages" & "neg_pages" dir will be created if not found 
+            and page dumps will be stored in those directory respectively
+            
+            Completed list will be generated here (if it does not exist)
+            in the form of "[source file name]_Done.csv"
+            
+            Not Found list will be generated here (if it does not exist)
+            in the form of [source file name]_None.csv
+        
+        source_data (str) : Name of CSV formatted source file
+            CSV file is expected to have NO HEADER and adhere 
+            to following format: [School Name],[City],[zipcode]  
+"""
+
+# command-line arguments parsing module
+parser = argparse.ArgumentParser()
+parser.add_argument("data_dir", help="Path to data directory where input file reside")
+parser.add_argument("source_data", help="CSV formatted source file")
+args = parser.parse_args()
+
+data_dir = args.data_dir
+source_file = args.source_data
+
+# check the directory and source file
+# raise exception if not found
+if not os.path.isdir(data_dir):
+    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), data_dir)
+if not os.path.isfile(os.path.join(data_dir, source_file)):
+    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), source_file)
+
+# create directories for page dump
+positive_pages_dir = os.path.join(data_dir, 'pos_pages')
+Path(positive_pages_dir).mkdir(parents=True, exist_ok=True)
+negative_pages_dir = os.path.join(data_dir, 'neg_pages')
+Path(negative_pages_dir).mkdir(parents=True, exist_ok=True)
+
+completed_school_list_file = os.path.join(data_dir, source_file[:-4] + '_Done.csv')
+notfound_school_list_file = os.path.join(data_dir, source_file[:-4] + '_None.csv')
 
 
 class Annotate:
-    school_name_city_zip_list = \
-        extract_national_school_name_city_zip("/Users/jhp/MSU/project/schooltext/jhp/data/NationalNew.csv")
-    annotated_school_names = set()
+    # set of schools that were already processed
+    # each element is in the following tuple form
+    # (school_name, school_city, school_zipcode)
+    processed_schools = set()
     try:
-        with open(COMPLETED_SCHOOL_LIST, 'r') as rf:
+        # check if completed list exists and import data
+        # in order to avoid re-processing same schools
+        with open(completed_school_list_file, 'r') as rf:
             for line in rf:
-                annotated_school_names.add(line.strip('\n').split(',')[0])
+                annotated_school = line.strip('\n').split(',')
+                processed_schools.add((annotated_school[0], annotated_school[1], annotated_school[2]))
     except IOError:
-        print("Nothing completed")
+        # if file does not exists then the program
+        # catches the exception and moves on
+        print("Nothing completed previously")
         pass
+
     try:
-        with open(BYPASS_SCHOOL_LIST, 'r') as rf:
+        # check if not-found list exists and import data
+        # in order to avoid re-processing same schools
+        with open(notfound_school_list_file, 'r') as rf:
             for line in rf:
-                annotated_school_names.add(line.strip('\n').split(',')[0])
+                notfound_school = line.strip('\n').split(',')
+                processed_schools.add((notfound_school[0], notfound_school[1], notfound_school[2]))
     except IOError:
-        print("Nothing bypassed")
+        # if file does not exists then the program
+        # catches the exception and moves on
+        print("Nothing Not-Founded previously")
         pass
+
+    # process source data to prep for Google Search
+    input_csv = pd.read_csv(os.path.join(data_dir, source_file), header=None)
+    school_name = input_csv[0]
+    school_city = input_csv[1]
+    school_zipcode = input_csv[2].astype(str)
+    search_query = school_name + ',' + school_city + ',' + school_zipcode
 
     school_idx = 0
-    # bypassed_school_list = []
-
     search_idx = None
     google_search_url_list = []
 
+    # start the Firefox browser
     browser = webdriver.Firefox()
     while True:
-        if school_name_city_zip_list[school_idx][0] in annotated_school_names:
-            if school_idx < len(school_name_city_zip_list) - 1:
+        if (school_name[school_idx], school_city[school_idx], school_zipcode[school_idx]) in processed_schools:
+            # check if the school has been processed
+            if school_idx < len(school_name) - 1:
                 school_idx += 1
                 continue
             else:
@@ -47,53 +112,47 @@ class Annotate:
                 browser.quit()
                 sys.exit()
 
-        query_str = ''
-        for elem in school_name_city_zip_list[school_idx]:
-            query_str += elem + ' '
-        print("school name: {} start".format(school_name_city_zip_list[school_idx][0]))
-        res, google_search_url_list = search_alink_extract(browser, query_str)
+        print("school name: {} start".format(school_name[school_idx]))
+        # perform Google Search and Extract Search Result Links
+        # source code resides in the separate file "Tools.py"
+        res, google_search_url_list = search_alink_extract(browser, search_query[school_idx].replace(',', ' '))
 
         if res:
+            # if valid Google search results are retrieved
+            # Start processing result links
             search_idx = 0
             safe_get(browser, google_search_url_list[search_idx])
             sleep(5)
             # print(browser.page_source.encode("utf-8"))
             break
         else:
-            print("strange query {} returned no result".format(query_str))
+            # if query does not results search results then
+            # print error and move on to next school
+            print("Strange query {} returned no result".format(search_query[school_idx].replace(',', ' ')))
             school_idx += 1
 
 
-# refresh selenium with current index
+# refresh selenium browser with current index
 def refresh_browser():
     if Annotate.search_idx is not None:
         Annotate.browser.get(Annotate.google_search_url_list[Annotate.search_idx])
     else:
         while True:
-            if Annotate.school_name_city_zip_list[Annotate.school_idx][0] in Annotate.annotated_school_names:
+            if (Annotate.school_name[Annotate.school_idx], Annotate.school_city[Annotate.school_idx], Annotate.school_zipcode[Annotate.school_idx]) in Annotate.processed_schools:
                 Annotate.school_idx += 1
                 continue
-            Annotate.query_str = ''
-            for elem in Annotate.school_name_city_zip_list[Annotate.school_idx]:
-                Annotate.query_str += elem + ' '
-            print("school name: {} start".format(Annotate.school_name_city_zip_list[Annotate.school_idx][0]))
-            res, Annotate.google_search_url_list = search_alink_extract(Annotate.browser, Annotate.query_str)
+
+            print("school name: {} start".format(Annotate.school_name[Annotate.school_idx]))
+            res, Annotate.google_search_url_list = \
+                search_alink_extract(Annotate.browser, Annotate.search_query[Annotate.school_idx].replace(',', ' '))
 
             if res:
                 Annotate.search_idx = 0
                 safe_get(Annotate.browser, Annotate.google_search_url_list[Annotate.search_idx])
                 break
             else:
-                write_result(BYPASS_SCHOOL_LIST)
+                write_result(notfound_school_list_file)
                 Annotate.school_idx += 1
-                # Annotate.bypassed_school_list.append(Annotate.query_str)
-
-
-def is_done_already(school_name):
-    if school_name in Annotate.annotated_school_names:
-        return True
-    else:
-        return False
 
 
 def prev_url():
@@ -117,49 +176,27 @@ def next_url():
     """
     if Annotate.search_idx < len(Annotate.google_search_url_list) - 1:
         Annotate.search_idx += 1
-    elif Annotate.school_idx < len(Annotate.school_name_city_zip_list) - 1:
-        write_result(BYPASS_SCHOOL_LIST)
-        # Annotate.bypassed_school_list.append(Annotate.query_str)
+    elif Annotate.school_idx < len(Annotate.school_name) - 1:
+        write_result(notfound_school_list_file)
         Annotate.school_idx += 1
         Annotate.search_idx = None
     else:
         print("All Done")
         Annotate.browser.quit()
-        # with open(BYPASS_SCHOOL_LIST, 'w') as wf:
-        #     for item in Annotate.bypassed_school_list:
-        #         wf.write(item + '\n')
-        #         wf.flush()
         sys.exit()
+
     refresh_browser()
 
 
-def get_file_name_from_url(url):
-    if url[-1] == "/":
-        url = url[:-1]
-
-    if "http://" in url:
-        url = url.replace('http://', '')
-    elif "https://" in url:
-        url = url.replace('https://', '')
-
-    url = url.replace("/", "_").strip()
-    if len(url) > 250:
-        url = url[:250]
-    return url + ".html"
-
-
 def write_result(file_name):
-    result_str = ''
-    for elem in Annotate.school_name_city_zip_list[Annotate.school_idx]:
-        result_str += elem + ','
-
-    result_str += (Annotate.browser.current_url + '\n') if file_name == COMPLETED_SCHOOL_LIST else 'None\n'
+    result_str = Annotate.search_query[Annotate.school_idx]
+    result_str += ',' + (Annotate.browser.current_url + '\n') if file_name == completed_school_list_file else ',None\n'
 
     with open(file_name, 'a') as wf:
         wf.write(result_str)
         wf.flush()
 
-    Annotate.annotated_school_names.add(Annotate.school_name_city_zip_list[Annotate.school_idx][0])
+    Annotate.processed_schools.add((Annotate.school_name[Annotate.school_idx], Annotate.school_city[Annotate.school_idx], Annotate.school_zipcode[Annotate.school_idx]))
 
 
 def mark(func):
@@ -173,11 +210,12 @@ def mark(func):
     print("Mark the current page as ", func)
 
     if func == 'pos':  # positive page
-        with open(POS_PATH_SAVE + get_file_name_from_url(current_url), 'wb') as wf:
+        with open(os.path.join(positive_pages_dir, get_file_name_from_url(current_url)), 'wb') as wf:
             wf.write(Annotate.browser.page_source.encode('utf-8'))
             wf.flush()
-        write_result(COMPLETED_SCHOOL_LIST)
-        if Annotate.school_idx < len(Annotate.school_name_city_zip_list) - 1:
+        write_result(completed_school_list_file)
+
+        if Annotate.school_idx < len(Annotate.school_name) - 1:
             Annotate.school_idx += 1
             Annotate.search_idx = None
             refresh_browser()
@@ -187,17 +225,16 @@ def mark(func):
             sys.exit()
 
     elif func == 'neg':  # negative page
-        with open(NEG_PATH_SAVE + get_file_name_from_url(current_url), 'wb') as wf:
+        with open(os.path.join(negative_pages_dir, get_file_name_from_url(current_url)), 'wb') as wf:
             wf.write(Annotate.browser.page_source.encode('utf-8'))
+            wf.flush()
         next_url()
-    # elif func == 'done':
 
 
-def answer(flag):
-    """
-        intractive with user (e.g., Replace with new annotation?)
-    """
-    print(flag)
+# quit application
+def quit_app():
+    root.destroy()
+    Annotate.browser.quit()
 
 
 root = tkinter.Tk()
@@ -233,5 +270,9 @@ ref_btn = ttk.Button(text="Positive",
 false_btn = ttk.Button(text="Negative",
                        style="C.TButton",
                        command=lambda: mark('neg')).pack()
+
+quit_btn = ttk.Button(text="Quit",
+                      style="C.TButton",
+                      command=lambda: quit_app()).pack()
 
 root.mainloop()
