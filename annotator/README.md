@@ -56,7 +56,7 @@ school name: Thunderbird High School start
 
 **Tk GUI**
 
-![Tk GUI](https://gitlab.msu.edu/adsdatascience/schooltext/-/blob/4364944e5c3468c58681699cdb66bc7fb09d33f1/annotator/images/tkgui.png?raw=true)
+![Tk GUI](images/tkgui.png)
 
 User may stop at any point by clicking `Quit` button or simply by killing the browser & GUI and resume by starting program again. The application is designed to check for processed schools before starting the annotation task
 
