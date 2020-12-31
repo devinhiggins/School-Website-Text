@@ -7,6 +7,61 @@ Annotation tool allows you to easily mark positive and negative school homepages
 
 
 
+### Example Usage
+
+Requires ***TWO*** arguments
+
+- **data_dir** (str): Absolute path to data directory where input CSV file resides
+  - "pos_pages" & "neg_pages" dir will be created if not found and page dumps will be stored in those directory respectively
+  - Completed list will be generated here (if it does not exist) in the form of "[source file name]_Done.csv"
+  - Not Found list will be generated here (if it does not exist) in the form of [source file name]_None.csv
+- **source_data** (str): Name of CSV formatted source file
+  - CSV file is expected to have NO HEADER and adhere to following format: 
+    - [School Name],[City],[zipcode]
+
+If either of them is missing, program shows error messages with usage
+
+```bash
+$ python AnnotateTool.py
+usage: AnnotateTool.py [-h] data_dir source_data
+AnnotateTool.py: error: the following arguments are required: data_dir, source_data
+
+$ python AnnotateTool.py -h
+usage: AnnotateTool.py [-h] data_dir source_data
+
+positional arguments:
+  data_dir     Path to data directory where input file reside
+  source_data  CSV formatted source file
+
+optional arguments:
+  -h, --help   show this help message and exit
+```
+
+If the data directory does not exists and/or source file does not exists program terminates and throws error
+
+```bash
+$ python AnnotateTool.py /this/is/the/way ihavespoken.csv
+Traceback (most recent call last):
+  File "/Users/jhp/Projects/MSU/schooltext/annotator/AnnotateTool.py", line 46, in <module>
+    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), data_dir)
+FileNotFoundError: [Errno 2] No such file or directory: '/this/is/the/way'
+```
+
+If all requirements are met program starts by opening a Firefox browser and performing a Google search. Tk GUI will appear once initial tasks are completed
+
+```bash
+$ python AnnotateTool.py /Users/jhp/Projects/MSU/schooltext/data/national1 NationalNew.csv
+school name: Thunderbird High School start
+```
+
+**Tk GUI**
+
+![https://gitlab.msu.edu/adsdatascience/schooltext/-/blob/master/annotator/images/tkgui.png]()
+
+User may stop at any point by clicking `Quit` button or simply by killing the browser & GUI and resume by starting program again. The application is designed to check for processed schools before starting the annotation task
+
+
+
 ### Requirement
 
 - Python 3.6 or higher, with Tk GUI toolkit (Tkinter)
