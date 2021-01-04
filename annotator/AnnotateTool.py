@@ -233,8 +233,8 @@ def mark(func):
 
 # quit application
 def quit_app():
-    root.destroy()
     Annotate.browser.quit()
+    sys.exit()
 
 
 root = tkinter.Tk()
