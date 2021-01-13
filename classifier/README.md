@@ -81,3 +81,48 @@ Avg. F1: 0.9615468410412887
 Avg. Accuracy 0.9635519125683061
 ```
 
+#### 2. School Homepage Classification
+
+[TBA]
+
+### Requirements
+
+------
+
+- Python 3.6 or higher
+
+- [NLTK Data](https://www.nltk.org/data.html) (stopwords)
+
+  > NOTE: Downloading all items in NLTK data can take long. You may use either one of the methods below to avoid this issue.
+
+  - Python Shell
+
+  ```python
+  import nltk
+  nltk.download('stopwords')
+  ```
+
+  - Bash command-line
+
+  ```bash
+  $ python -m nltk.downloader stopwords
+  ```
+
+- Firefox browser and geckodriver
+
+  - `geckodriver` may be downloaded from its [GitHub repository](https://github.com/mozilla/geckodriver/releases).
+
+  - ***macOS 10.15 Catalina*** or higher
+
+    Due to the requirement from Apple that all programs must be notarized, geckodriver will not work on macOS Catalina or higher if you manually download it through another notarized program such as your browser. Instead please use [Homebrew](https://brew.sh/) to install `geckodriver`
+
+    ```bash
+    $ brew install geckodriver
+    ```
+
+- Additional python packages
+
+  ```bash
+  $ pip install -r requirements.txt
+  ```
+
