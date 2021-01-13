@@ -10,7 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import StratifiedKFold
 
-from classifier.document_prep import document_prep
+from document_prep import document_prep
 
 parser = argparse.ArgumentParser()  # command-line arguments parsing module
 parser.add_argument("pos_dir_or_file", help="Path to school homepage dump directory or list file")
