@@ -68,12 +68,30 @@ elif not isfile(join(model_dir, tfidf_model)):
 elif not isfile(join(model_dir, rfclf_model)):
     raise FileNotFoundError(errno.ENOENT, strerror(errno.ENOENT), rfclf_model)
 
+processed_schools = set()
+try:
+    # check if completed list exists and import data
+    # in order to avoid re-processing same schools
+    with open(join(data_dir, output_file), 'r') as rf:
+        for line in rf:
+            processed_school = line.strip('\n').split(',')
+            processed_schools.add((processed_school[0], processed_school[1], processed_school[2]))
+    print("{} school has been processed previously".format(len(processed_schools)))
+except IOError:
+    # if file does not exists then the program
+    # catches the exception and moves on
+    print("No school has been processed")
+
 with open(join(data_dir, source_file), 'r') as rf:
     school_set = set()
     for line in rf:
         tmp_school = line.strip('\n').split(',')
         if tmp_school[0] == 'SCH_NAME' or len(tmp_school) < 3:
             print("Error: " + tmp_school[0], flush=True)
+            continue
+
+        if (tmp_school[0], tmp_school[1], tmp_school[2]) in processed_schools:
+            # pass if the school has been already processed
             continue
 
         school_set.add((tmp_school[0], tmp_school[1], tmp_school[2]))
@@ -122,12 +140,12 @@ def classify_school_page(doc_list):
     x_test = np.array(doc_list)
 
     # load tfidf model
-    tfidf_vect = joblib.load(tfidf_model)
+    tfidf_vect = joblib.load(join(model_dir, tfidf_model))
     # transform new documents to doc-term matrix
     x_test_tfidf = tfidf_vect.transform(x_test)
 
     # load Random Forest model
-    rfclf = joblib.load(rfclf_model)
+    rfclf = joblib.load(join(model_dir, rfclf_model))
     # predict new documents
     prediction = rfclf.predict(x_test_tfidf)
     # return prediction result
