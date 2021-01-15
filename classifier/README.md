@@ -51,7 +51,7 @@ optional arguments:
   -h, --help       show this help message and exit
 ```
 
-> NOTE: If any of the directory and/or file does not exists, program terminates and throws error
+> NOTE: If any of the directory and/or file does not exist, program terminates and throws error
 
 ```bash
 $ python classifier_train.py /hello/world /this/is /the/way
@@ -83,7 +83,55 @@ Avg. Accuracy 0.9635519125683061
 
 #### 2. School Homepage Classification
 
-[TBA]
+Requires ***FOUR*** arguments
+
+- **data_dir** (str): Absolute path to data directory where input CSV file resides
+  - Classification result will be stored in this directory in the form of "[source file name]_Result.csv"
+- **source_data** (str): Name of the CSV formatted source file
+  - CSV file is expected in following format:
+    - [School Name], [School City], [School Zip Code]
+- **model_dir** (str): Absolute path to classifier model directory where pre-trained classifier resides
+- **split_index** (int): Specific classifier model choice among k-fold splits.
+  - Refer to Precision, Recall, Accuracy, and F1 score of each model and choose specific model index
+  - Stats of the pre-trained models can be found here
+
+> NOTE: if any of them is missing, program shows error messages with usage information.
+
+```bash
+$ python classification.py
+usage: classification.py [-h] data_dir source_data model_dir split_index
+classification.py: error: the following arguments are required: data_dir, source_data, model_dir, split_index
+
+$ python classification.py -h
+usage: classification.py [-h] data_dir source_data model_dir split_index
+
+positional arguments:
+  data_dir     Path to data directory where input file reside
+  source_data  CSV formatted source file
+  model_dir    Path to model directory where trained classifier model reside
+  split_index  Split index (k-fold) of the classifier model
+
+optional arguments:
+  -h, --help   show this help message and exit
+```
+
+> NOTE: If any of the directories and/or files do not exist, program terminates and throws error
+
+```bash
+$ python classification.py /data/dir source.csv /model/dir 3
+Traceback (most recent call last):
+  File "/Users/jhp/Projects/MSU/schooltext/classifier/classification.py", line 61, in <module>
+    raise FileNotFoundError(errno.ENOENT, strerror(errno.ENOENT), data_dir)
+FileNotFoundError: [Errno 2] No such file or directory: '/data/dir'
+```
+
+> NOTE: Since this is a long process, it is highly recommended that you execute this in the background preferably through screen (Linux/macOS) type of command
+
+> NOTE: Following command example pipe std/err output to a log file and run it in the background
+
+```bash
+$ python classification.py /data/dir source.csv /model/dir 2 >& run.log &
+```
 
 ### Requirements
 
