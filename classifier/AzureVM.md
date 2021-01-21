@@ -75,3 +75,70 @@ This step-by-step instruction covers prepping Azure Ubuntu VM for the school hom
 
 ![Azure VM open port 3389](images/06_azure_port.png)  
 
+**7. (Optional) Setup SSH public key for passwordless access**
+
+- Generate RSA key using `ssh-keygen` command
+
+```bash
+$ ssh-keygen -t rsa
+Generating public/private rsa key pair.
+Enter file in which to save the key (/Users/jhp/.ssh/id_rsa): 
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /Users/jhp/.ssh/id_rsa.
+Your public key has been saved in /Users/jhp/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:zF9gZDW5tcIiMDv04wj5BftlK1oauItTlWH3uyPfALc jhp@JP-MBP-CA.local
+The key's randomart image is:
++---[RSA 3072]----+
+|          o.o.   |
+|      B .o  ...  |
+|     + @ .o. o . |
+|    o *o=.=.+ .  |
+|     = *S=.+..   |
+|    o + =+oo     |
+|   . . = .E.     |
+|  ... o . oo     |
+|  ....   o...    |
++----[SHA256]-----+
+```
+
+- Generated RSA key pair should be in the `.ssh` directory inside your `home` directory
+
+```bash
+$ cd ~/.ssh
+$ ls -l
+total 24
+-rw-------  1 jhp  staff   2.5K Jan 20 12:21 id_rsa
+-rw-r--r--  1 jhp  staff   573B Jan 20 12:21 id_rsa.pub
+-rw-r--r--  1 jhp  staff   174B Jan 11 10:16 known_hosts
+```
+
+- Open public key file `id_rsa.pub` and copy its contents
+- Access Azure VM using `ssh` command and type **yes** to host key checking; then type password that was setup during VM creation period
+
+```bash
+$ ssh schooltext@52.188.146.174
+The authenticity of host '52.188.146.174 (52.188.146.174)' can't be established.
+ECDSA key fingerprint is SHA256:Ifkug194h7MG8e+bZNNoFRzBZMj7jhQ4uquLc0ziUjg.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+
+Warning: Permanently added '52.188.146.174' (ECDSA) to the list of known hosts.
+schooltext@52.188.146.174's password: 
+
+Welcome to Ubuntu 18.04.5 LTS (GNU/Linux 5.4.0-1036-azure x86_64)
+(...)
+```
+
+- Go to `.ssh` directory inside your `home` directory and open **authorized_keys** file to paste your public key file contents copied from your machine
+
+```bash
+$ cd ~/.ssh
+$ ls -l
+total 0
+-rw------- 1 schooltext schooltext 0 Jan 20 23:17 authorized_keys
+
+$ echo "ssh-rsa AAAAB3NzaC1...SIWE= jhp@JP-MBP-CA.local" >> authorized_keys
+```
+
+- Now you can ssh into Azure VM without typing password
