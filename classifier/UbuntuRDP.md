@@ -8,7 +8,7 @@ This instruction covers setting up Remote Desktop (RDP) access on Azure Ubuntu V
 
 > NOTE: This instruction assumes that Azure VM is setup with Ubuntu 18.04 LTS image following ***"[Creating Azure VM with Ubuntu image](AzureVM.md)"*** instruction
 
-1. Connect Azure Ubuntu VM via ssh. Update Ubuntu repositories and package list then perform upgrade if updates are available
+**1. Connect Azure Ubuntu VM via ssh. Update Ubuntu repositories and package list then perform upgrade if updates are available**
 
 ```bash
 $ sudo apt update
@@ -41,11 +41,11 @@ Get:2 http://azure.archive.ubuntu.com/ubuntu bionic-updates/main amd64 libsystem
 (...)
 ```
 
-2. After update process completes, restart the Azure VM by clicking `Restart` from Azure Portal
+**2. After update process completes, restart the Azure VM by clicking `Restart` from Azure Portal**
 
 ![Restart VM](images/2_02_azure_restart.png) 
 
-3. Once VM is restarted, connect VM via ssh. Install Unity Desktop GUI. Restart the VM by the Azure Portal.
+**3. Once VM is restarted, connect VM via ssh. Install Unity Desktop GUI. Restart the VM by the Azure Portal.**
 
 ```bash
 $ sudo apt install ubuntu-desktop
@@ -62,18 +62,18 @@ Do you want to continue? [Y/n] y
 (grab a cup of coffee)
 ```
 
-4. Using Boot diagnostics in the Azure portal side bar, verify Unity Desktop is up and running.
+**4. Using Boot diagnostics in the Azure portal side bar, verify Unity Desktop is up and running.**
 
 ![Boot Diagnostics Sidebar](images/2_04_azure_bootdiag_sidebar.png) ![Boot Diagnostics Screenshot](images/2_04_azure_bootdiag.png)  
 
-5. Connect VM via ssh. Create a Downloads folder under your home directory and go into the folder
+**5. Connect VM via ssh. Create a Downloads folder under your home directory and go into the folder**
 
 ```bash
 $ mkdir Downloads
 $ cd Downloads
 ```
 
-6. Visit [Griffon's IT Library XRDP](https://c-nergy.be/blog/?cat=79) section and follow instruction to download most recent [easy install xRDP script](https://c-nergy.be/blog/?p=15978) for Ubuntu 18.04
+**6. Visit [Griffon's IT Library XRDP](https://c-nergy.be/blog/?cat=79) section and follow instruction to download most recent [easy install xRDP script](https://c-nergy.be/blog/?p=15978) for Ubuntu 18.04**
 
 > NOTE: At the time of writing (Jan 21, 2021), the most up-to-date script version is [1.2.2](https://c-nergy.be/blog/?p=15978)
 
@@ -101,8 +101,8 @@ $ chmod +x  ~/Downloads/xrdp-installer-1.2.2.sh
 $ ./xrdp-installer-1.2.2.sh
 ```
 
-7. Restart VM using Azure Portal
-8. Once VM reboots, test RDP using the RDP app of your preference
+**7. Restart VM using Azure Portal**
+**8. Once VM reboots, test RDP using the RDP app of your preference**
 
 > NOTE: This example uses *Microsoft Remote Desktop* (v.10.5) on macOS Catalina (v.10.15.7)
 
