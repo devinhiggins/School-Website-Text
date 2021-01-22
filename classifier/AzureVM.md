@@ -1,4 +1,4 @@
-# Azure Ubuntu VM for Classification
+# Azure Ubuntu VM for Classification (1/3)
 
 This step-by-step instruction covers prepping Azure Ubuntu VM for the school homepage classification.
 
