@@ -182,13 +182,13 @@ Since active classification task could easily take 6+ hrs depending on the size 
 
 1. Setup Azure VM with Ubuntu 18.04 LTS image
 
-Follow instruction in [AzureVM markdown](AzureVM.md) document in the current folder
+- Follow instruction in [AzureVM markdown](AzureVM.md) document in the current folder
 
 2. Setup RDP access on Azure Ubuntu VM
 
-Follow instruction in [UbuntuRDP markdown](UbuntuRDP.md) document in the current folder
+- Follow instruction in [UbuntuRDP markdown](UbuntuRDP.md) document in the current folder
 
 3. Setup Python DEV environment on Azure Ubuntu VM
 
-Follow instruction in [PythonEnvSetup markdown](PythonEnvSetup.md) document in the current folder
+- Follow instruction in [PythonEnvSetup markdown](PythonEnvSetup.md) document in the current folder
 
