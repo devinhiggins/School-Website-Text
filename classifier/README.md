@@ -174,3 +174,21 @@ $ python classification.py /data/dir source.csv /model/dir 2 >& run.log &
   $ pip install -r requirements.txt
   ```
 
+### Recommended Environment
+
+------
+
+Since active classification task could easily take 6+ hrs depending on the size of the school list, it is advisable that the classification task to be run on elsewhere other than your own machine. In following instruction, we provision a virtual machine (VM) in Azure cloud environment to run our classification task.
+
+1. Setup Azure VM with Ubuntu 18.04 LTS image
+
+Follow instruction in [AzureVM markdown](AzureVM.md) document in the current folder
+
+2. Setup RDP access on Azure Ubuntu VM
+
+Follow instruction in [UbuntuRDP markdown](UbuntuRDP.md) document in the current folder
+
+3. Setup Python DEV environment on Azure Ubuntu VM
+
+Follow instruction in [PythonEnvSetup markdown](PythonEnvSetup.md) document in the current folder
+
