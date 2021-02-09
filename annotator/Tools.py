@@ -46,7 +46,7 @@ def get_file_name_from_url(url):
     elif "https://" in url:
         url = url.replace('https://', '')
 
-    url = url.replace("/", "_").strip()
+    url = url.replace("/", "_").replace('?', '_').strip()
     if len(url) > 250:
         url = url[:250]
     return url + ".html"
