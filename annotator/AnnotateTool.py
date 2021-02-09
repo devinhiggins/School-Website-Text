@@ -6,7 +6,7 @@ import argparse
 import pandas as pd
 from pathlib import Path
 from time import sleep
-from tkinter import ttk
+from tkinter import ttk, Label
 from selenium import webdriver
 from Tools import safe_get, search_alink_extract, get_file_name_from_url
 
@@ -252,6 +252,9 @@ style.map("C.TButton",
           foreground=[('pressed', 'red'), ('active', 'blue')],
           background=[('pressed', '!disabled', 'black'), ('active', 'white')]
           )
+
+query_label = Label(root, text='{}'.format(Annotate.search_query[Annotate.school_idx]))
+query_label.pack()
 
 # define buttons with their call_backs
 # add additional buttons if you need it
