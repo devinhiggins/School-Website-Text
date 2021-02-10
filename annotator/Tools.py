@@ -6,6 +6,58 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
 
 
+deny_list = [
+    ".har.com",
+    "wikipedia.org",
+    "bestplaces.net",
+    "city-data.com",
+    "facebook.com",
+    "usnews.com",
+    "greatschools.org",
+    "niche.com",
+    "publicschoolreview.com",
+    "schooldigger.com",
+    "texastribune.org",
+    "nces.ed.gov",
+    "k12guides.com",
+    "high-schools.com",
+    "hometownlocator.com",
+    "mapquest.com",
+    "newleafpropertymanagement.com",
+    "psychologytoday.com",
+    "realtor.com",
+    "zillow.com",
+    "neighborhoods.com",
+    "apartments.com",
+    "forrent.com",
+    "apartmentfinder.com",
+    "insideschools.org",
+    "newyorkschools.com",
+    "areavibes.com",
+    "collegesimply.com",
+    "maxpreps.com",
+    "211cny.com",
+    "propublica.org",
+    "movoto.com",
+    "homesnap.com",
+    "newsday.com",
+    "teacherlists.com",
+    "elementaryschools.org",
+    "yellowpages.com",
+    "trulia.com",
+    "schooltimeline.com",
+    "hisawyer.com",
+    "spellingcity.com",
+    "agile-ed.com",
+    "century21.com",
+    "k12academics.com",
+    "charitynavigator.org",
+    "alignable.com",
+    "linkedin.com",
+    "guidestar.org"
+]
+
+
 def wait_for(condition_function):
     start_time = time.time()
     while time.time() < start_time + 3:
@@ -94,6 +146,7 @@ def search_alink_extract(browser, search_query):
     # alink_set = set()
     for alink in search_soup.find_all('a'):
         href_link = alink.get('href')
+        deny_flag = False
 
         if href_link is None or href_link == '':
             continue
@@ -108,6 +161,13 @@ def search_alink_extract(browser, search_query):
             continue
 
         if not href_link.startswith('http'):
+            continue
+
+        for outlier in deny_list:
+            if outlier in href_link:
+                deny_flag = True
+                break
+        if deny_flag is True:
             continue
 
         alink_array.append(href_link)
