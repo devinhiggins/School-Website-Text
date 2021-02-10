@@ -140,6 +140,7 @@ def refresh_browser():
         while True:
             if (Annotate.school_name[Annotate.school_idx], Annotate.school_city[Annotate.school_idx], Annotate.school_zipcode[Annotate.school_idx]) in Annotate.processed_schools:
                 Annotate.school_idx += 1
+                query_label.config(text='{}'.format(Annotate.search_query[Annotate.school_idx]))
                 continue
 
             print("school name: {} start".format(Annotate.school_name[Annotate.school_idx]))
@@ -153,6 +154,7 @@ def refresh_browser():
             else:
                 write_result(notfound_school_list_file)
                 Annotate.school_idx += 1
+                query_label.config(text='{}'.format(Annotate.search_query[Annotate.school_idx]))
 
 
 def prev_url():
@@ -179,6 +181,7 @@ def next_url():
     elif Annotate.school_idx < len(Annotate.school_name) - 1:
         write_result(notfound_school_list_file)
         Annotate.school_idx += 1
+        query_label.config(text='{}'.format(Annotate.search_query[Annotate.school_idx]))
         Annotate.search_idx = None
     else:
         print("All Done")
@@ -217,6 +220,7 @@ def mark(func):
 
         if Annotate.school_idx < len(Annotate.school_name) - 1:
             Annotate.school_idx += 1
+            query_label.config(text='{}'.format(Annotate.search_query[Annotate.school_idx]))
             Annotate.search_idx = None
             refresh_browser()
         else:
