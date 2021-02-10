@@ -101,6 +101,9 @@ def search_alink_extract(browser, search_query):
         if href_link.startswith('http://webcache') or href_link.startswith('https://webcache'):
             continue
 
+        if 'google.com' in href_link:
+            continue
+
         if href_link in alink_array or '/watch?' in href_link:
             continue
 
