@@ -1,4 +1,13 @@
 outliers = [
+    "yelp.com",
+    "accounts.google.com",
+    "support.google.com",
+    "policies.google.com",
+    "myactivity.google.com",
+    "business.google.com",
+    "www.google.com",
+    "cde.ca.gov",
+    "twitter.com",
     ".har.com",
     "wikipedia.org",
     "bestplaces.net",
