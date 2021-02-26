@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException
 from selenium.webdriver.common.keys import Keys
 
 from outlier_sites import outliers
@@ -110,8 +110,13 @@ def prepare_document_list(browser, search_url_list):
         except Exception:
             print("Page load exception (prepare_doclist):", search_url)
             continue
-
-        page_source = browser.page_source
+        try:
+            page_source = browser.page_source
+        except UnexpectedAlertPresentException:
+            alert = browser.browser.switch_to.alert
+            alert.accept()
+            page_source = browser.page_source
+            
         soup = BeautifulSoup(page_source, 'html.parser')
 
         temp_document = ''
@@ -247,25 +252,33 @@ for school in school_set:
 
         alink_array.append(href_link)
 
+    print("candidate list: ", alink_array)
+
+    if len(alink_array) == 0:  # if candidate list is empty
+        with open(join(data_dir, output_file), 'a') as af:
+            af.write(school_name + ',' + school_city + ',' + school_zip + ',' + "None" + '\n')
+            af.flush()
+        continue  # move to next school
+
     positive_urls = evaluate_school_candidate_urls(driver, alink_array)
-    print(positive_urls)
+    print("positive list: ", positive_urls)
 
     if len(positive_urls) == 0:
         with open(join(data_dir, output_file), 'a') as af:
-            af.write(school_name + ',' + school_city + ','
-                     + school_zip + ',' + "None" + '\n')
-            print(str(school_idx) + ',' + school_name + ',' + school_city + ','
-                  + school_zip + ',' + "None", flush=True)
+            # af.write(school_name + ',' + school_city + ',' + school_zip + ',' + "None" + '\n')
+            af.write(school_name + ',' + school_city + ',' + school_zip + ',' + alink_array[0] + '\n')
             af.flush()
+            print(str(school_idx) + ',' + school_name + ',' + school_city + ','
+                  + school_zip + ',' + alink_array[0], flush=True)
     else:
         for idx in range(len(alink_array)):
             if idx == 0:
                 with open(join(data_dir, output_file), 'a') as af:
                     af.write(school_name + ',' + school_city + ','
-                             + school_zip + ',' + alink_array[idx] + '\n')
+                             + school_zip + ',' + positive_urls[idx] + '\n')
                     af.flush()
                     print(str(school_idx) + ',' + school_name + ',' + school_city + ','
-                          + school_zip + ',' + alink_array[idx], flush=True)
+                          + school_zip + ',' + positive_urls[idx], flush=True)
 
 driver.quit()
 print("DONE")
