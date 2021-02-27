@@ -148,12 +148,13 @@ $ python classification.py /data/dir source.csv /model/dir 2 >& run.log &
   ```python
   import nltk
   nltk.download('stopwords')
+  nltk.download('punkt')
   ```
 
   - Bash command-line
 
   ```bash
-  $ python -m nltk.downloader stopwords
+  $ python -m nltk.downloader stopwords punkt
   ```
 
 - Firefox browser and geckodriver
