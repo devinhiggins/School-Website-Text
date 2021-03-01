@@ -38,7 +38,7 @@ $ sudo apt install build-essential libssl-dev libffi-dev python3-dev
 >  NOTE: Virtual environment enables an isolated space on the Azure Ubuntu VM for Python projects, ensuring that each of your projects can have have its own set of dependencies that won't disrupt any of other projects.
 
 ```bash
-$ pip3 install -U virtualenv virtuanelvwrapper
+$ pip3 install -U virtualenv virtualenvwrapper
 ```
 
 **5. Create a folder where virtual environments will be stored. May be named anything but here we use conventional name `.virtualenvs`**
