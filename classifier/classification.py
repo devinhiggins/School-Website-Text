@@ -12,7 +12,8 @@ from bs4 import BeautifulSoup
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException
+from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException, InvalidArgumentException, \
+    NoAlertPresentException
 from selenium.webdriver.common.keys import Keys
 
 from outlier_sites import outliers
@@ -108,14 +109,23 @@ def prepare_document_list(browser, search_url_list):
                 browser.get(search_url)
             time.sleep(3)
         except Exception:
-            print("Page load exception (prepare_doclist):", search_url)
-            continue
+            print("Page load exception (prep_doc_list/browser.get):", search_url)
+            time.sleep(10)
         try:
             page_source = browser.page_source
         except UnexpectedAlertPresentException:
-            alert = browser.browser.switch_to.alert
-            alert.accept()
+            print("{} - UnexpectedAlertPresent".format(search_url))
+            try:
+                time.sleep(10)
+                alert = browser.switch_to.alert
+                alert.accept()
+            except NoAlertPresentException:
+                print("{} - NoAlertPresentException".format(search_url))
+                time.sleep(10)
             page_source = browser.page_source
+        except InvalidArgumentException:
+            print("{}-InvalidArgumentException: unexpected end of hex escape has occurred".format(search_url))
+            return []
             
         soup = BeautifulSoup(page_source, 'html.parser')
 
@@ -190,9 +200,26 @@ for school in school_set:
             driver.get('https://www.google.com')
     except TimeoutException:
         print("Timeout Error Wait and try again!")
-        time.sleep(10)
-        with wait_for_page_load(driver):
-            driver.get('https://www.google.com')
+        time.sleep(60)
+        try:
+            with wait_for_page_load(driver):
+                driver.get('https://www.google.com')
+        except TimeoutException:
+            print("2nd Timeout Error destroy driver and respawn")
+            driver.quit()
+            time.sleep(60)
+            driver = webdriver.Firefox()
+            with wait_for_page_load(driver):
+                driver.get('https://www.google.com')
+    except UnexpectedAlertPresentException:
+        print("{} - UnexpectedAlertPresent".format('get google.com'))
+        try:
+            time.sleep(10)
+            alert = driver.switch_to.alert
+            alert.accept()
+        except NoAlertPresentException:
+            print("{} - NoAlertPresentException".format('get google.com'))
+            time.sleep(10)
 
     search_box = driver.find_element_by_name('q')
     search_box.clear()
@@ -241,6 +268,9 @@ for school in school_set:
             continue
 
         if not href_link.startswith('http'):
+            continue
+
+        if 'download' in href_link or 'printview' in href_link:
             continue
 
         for fp in outliers:
