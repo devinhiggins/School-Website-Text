@@ -3,6 +3,7 @@
 This tool aims to iterate over classification result CSV file, open each URL and save each school homepage as a HTML file.
 
 - May be able to specify target state explicitly, otherwise it would look for entire U.S. school sheet
+- Utilizes Tableau result file (e.g., AK_Schools_Tableau.csv)
 
 ### Example Usage
 
