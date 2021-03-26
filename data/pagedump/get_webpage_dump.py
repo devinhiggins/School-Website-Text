@@ -1,8 +1,10 @@
 import argparse
+import errno
+import os
 import time
 import pandas as pd
 from contextlib import contextmanager
-from os.path import join
+from os.path import join, isdir, isfile
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException, NoAlertPresentException
 
@@ -75,7 +77,7 @@ def get_homepage_dump(repo_dir, out_dir, state='US'):
             out_dir (str) : Absolute path to output directory
             where the homepage dumps will reside
 
-            state (str) : state code (for entire data, it is 'US')
+            state (str) : Two-Letter State Abbreviations (for entire data, it is 'US')
     """
     if state in state_code:
         source_file = join(repo_dir, state+'_Schools_Tableau.csv')
@@ -124,7 +126,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("repo_dir", help="Path to data directory where source csv file reside")
     parser.add_argument("out_dir", help="Path to webpage dump/save directory")
-    parser.add_argument("state", help="Two-Letter State Abbreviations")
+    parser.add_argument("state", nargs='?', default='US', help="Two-Letter State Abbreviations (default: US)")
     args = parser.parse_args()
+
+    # check the directory and source file
+    # raise exception if not found
+    if not isdir(args.repo_dir):
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), args.repo_dir)
+    if not isdir(args.out_dir):
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), args.out_dir)
+    if not isfile(join(args.repo_dir, args.state+'_Schools_Tableau.csv')):
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), args.state+'_Schools_Tableau.csv')
     # execute page dump
     get_homepage_dump(args.repo_dir, args.out_dir, args.state)
