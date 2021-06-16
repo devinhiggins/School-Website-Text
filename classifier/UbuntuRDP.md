@@ -73,32 +73,32 @@ $ mkdir Downloads
 $ cd Downloads
 ```
 
-**6. Visit [Griffon's IT Library XRDP](https://c-nergy.be/blog/?cat=79) section and follow instruction to download most recent [easy install xRDP script](https://c-nergy.be/blog/?p=15978) for Ubuntu 18.04**
+**6. Visit [Griffon's IT Library XRDP](https://c-nergy.be/blog/?cat=79) section and follow instruction to download most recent [easy install xRDP script](https://c-nergy.be/blog/?p=16817) for Ubuntu 18.04**
 
-> NOTE: At the time of writing (Jan 21, 2021), the most up-to-date script version is [1.2.2](https://c-nergy.be/blog/?p=15978)
+> NOTE: At the time of revision (Jun 2, 2021), the most up-to-date script version is [1.2.3](https://c-nergy.be/blog/?p=16817)
 
 - Download script
 
 ```bash
-$ wget https://www.c-nergy.be/downloads/xrdp-installer-1.2.2.zip
+$ wget https://c-nergy.be/downloads/xRDP/xrdp-installer-1.2.3.zip
 ```
 
 - Unzip the file
 
 ```bash
-$ unzip xrdp-installer-1.2.2.zip
+$ unzip xrdp-installer-1.2.3.zip
 ```
 
 - Set **eXecute Right** on the script
 
 ```bash
-$ chmod +x  ~/Downloads/xrdp-installer-1.2.2.sh
+$ chmod +x  ~/Downloads/xrdp-installer-1.2.3.sh
 ```
 
 - Perform xRDP installation by running the script as normal user (NOT `sudo` ) 
 
 ```bash
-$ ./xrdp-installer-1.2.2.sh
+$ ./xrdp-installer-1.2.3.sh
 ```
 
 **7. Restart VM using Azure Portal**
