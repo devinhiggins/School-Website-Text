@@ -53,8 +53,8 @@ $ mkdir -p ~/.virtualenvs
 $ echo "" >> ~/.bashrc
 $ echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc
 $ echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
-$ echo "export VIRTUALENVWRAPPER_VIRTUALENV=/home/schooltext/.local/bin/virtualenv" >> ~/.bashrc
-$ echo "source ~/.local/bin/virtualenvwrapper.sh" >> ~/.bashrc
+$ echo "export VIRTUALENVWRAPPER_VIRTUALENV=$HOME/.local/bin/virtualenv" >> ~/.bashrc
+$ echo "source $HOME/.local/bin/virtualenvwrapper.sh" >> ~/.bashrc
 ```
 
 **7. Activate these changes by typing**
