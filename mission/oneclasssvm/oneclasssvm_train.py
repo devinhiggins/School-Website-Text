@@ -1,6 +1,8 @@
 import argparse
+import errno
 import re
-from os.path import join
+from os import strerror
+from os.path import join, isdir, isfile
 import pandas as pd
 from nltk import word_tokenize
 from nltk.corpus import stopwords
@@ -54,6 +56,13 @@ if __name__ == '__main__':
     data_dir = args.data_dir
     train_data = args.train_data
     test_data = args.test_data
+
+    if not isdir(data_dir):
+        raise FileNotFoundError(errno.ENOENT, strerror(errno.ENOENT), data_dir)
+    elif not isfile(train_data):
+        raise FileNotFoundError(errno.ENOENT, strerror(errno.ENOENT), train_data)
+    elif not isfile(test_data):
+        raise FileNotFoundError(errno.ENOENT, strerror(errno.ENOENT), test_data)
 
     train_doc_list = document_prep(data_dir, train_data)
     train_bin_list = [1 for i in range(len(train_doc_list))]
