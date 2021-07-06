@@ -50,3 +50,31 @@ mission_terms = ['academic success', 'academic excellence', 'educational excelle
                  'value of diversity', 'diversity', 'ever changing', 'soft skill', 'manner', 'perseverance',
                  'emotional skill', 'self-discipline', 'self-esteem', 'values', 'self-worth', 'confidence',
                  'cultivating individual strength', 'respect for individuality', 'accommodating individual differences']
+
+
+def is_deny_listed(src_url):  # check if url is deny listed
+    for elem in deny_list:
+        if (elem in src_url) or (elem.lower() in src_url.lower()):
+            return True
+    return False
+
+
+def has_priority(url_label):  # check if link label has priority keywords
+    for elem in priority_keys:
+        if (elem in url_label) or (elem.lower() in url_label.lower()):
+            return True
+    return False
+
+
+def is_filtered(url_label):  # check if link label has filtered keywords
+    for elem in filtered_keys:
+        if (elem in url_label) or (elem.lower() in url_label.lower()):
+            return True
+    return False
+
+
+def traverse_req(url_label):  # check if link label triggers traversing down further
+    for elem in traverse_triggers:
+        if (elem in url_label) or (elem.lower() in url_label.lower()):
+            return True
+    return False
