@@ -28,7 +28,7 @@ def link_label_freq(data_dir, sch_url_file, sch_name_file=None):
     start_time = time.time()
     print("Start Time: {}".format(start_time), flush=True)
 
-    link_name_dict = {}
+    link_label_dict = {}
     sch_name_set = set()
     driver = webdriver.Firefox()
     school_idx = 0
@@ -47,7 +47,7 @@ def link_label_freq(data_dir, sch_url_file, sch_name_file=None):
 
         school_idx += 1
         # process school homepage
-        href_urls = extract_candidate_urls(driver, row.WEBSITE, vip_keys=None, label_dic=link_name_dict)
+        href_urls = extract_candidate_urls(driver, row.WEBSITE, vip_keys=None, label_dic=link_label_dict)
         # check number of candidate urls
         print('{} - {} links'.format(row.SCH_NAME, len(href_urls)))
 
@@ -56,9 +56,9 @@ def link_label_freq(data_dir, sch_url_file, sch_name_file=None):
             # Any port in a storm, you know.
             print('# of processed Schools: {} / Execution Time: {}'.format(school_idx, (time.time()-start_time)))
             with open(join(data_dir, 'href_link_freq.csv'), 'w') as cf:
-                for k, v in link_name_dict.items():  # write label and its frequency to a CSV formatted file
+                for k, v in link_label_dict.items():  # write label and its frequency to a CSV formatted file
                     prep_key = re.sub('[^A-Za-z0-9 ]+', '', k)
                     cf.write(prep_key + ',' + str(v) + '\n')
 
     driver.quit()
-    return link_name_dict
+    return link_label_dict
