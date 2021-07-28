@@ -122,6 +122,68 @@ def gen_final_etas(log_dir):
             wf.write(state + ',' + elapsed_time_list[0].strftime('%d:%H:%M:%S.%f') + '\n')
 
 
+def add_mission_stmt_tableau(mission_dir, tableau_dir, tableau_file='US_Schools_Tableau.csv'):
+    """
+    Add mission statement result data to existing tableau sheet
+
+    Args:
+        mission_dir (str): Path to mission statement CSV sheets
+
+        tableau_dir (str): Path to tableau CSV sheet
+
+        tableau_file (str, default='US_Schools_Tableau.csv'): US level tableau CSV sheet
+    """
+    # import mission data
+    mission_csv_df_list = []
+    for mission_file in listdir(mission_dir):  # iterate per-state mission statement results
+        if not mission_file.endswith('.csv'):
+            continue
+
+        mission_csv_df = pd.read_csv(join(mission_dir, mission_file))
+        state_abbr_list = [mission_file[:2] for i in range(len(mission_csv_df))]
+        mission_csv_df['LSTATE'] = state_abbr_list  # add state code column to prep for combining all results
+
+        mission_csv_df_list.append(mission_csv_df)
+    total_mission_csv_df = pd.concat(mission_csv_df_list, ignore_index=True)  # combine all states into one dataframe
+
+    # import existing US level tableau data
+    tableau_csv_df = pd.read_csv(join(tableau_dir, tableau_file))
+    mission_list = ['' for i in range(len(tableau_csv_df))]
+    tableau_csv_df['MISSION'] = mission_list  # create empty 'MISSION' column for tableau data
+    for row in tableau_csv_df.itertuples():
+        try:
+            # find matching record between the current row in
+            # tableau sheet versus combined mission statement result sheet
+            # and get index of the row in combined mission statement result sheet
+            mission_idx = total_mission_csv_df[(total_mission_csv_df['SCH_NAME'] == row.SCH_NAME) &
+                                               (total_mission_csv_df['LSTATE'] == row.LSTATE) &
+                                               (total_mission_csv_df['WEBSITE'] == row.WEBSITE)].index[0]
+        except IndexError:  # no match found
+            # traceback.print_exc()
+            # print("row info: {}".format(row.SCH_NAME, row.LSTATE, row.WEBSITE))
+            # print("match slice: {}".format(total_mission_csv_df[(total_mission_csv_df['SCH_NAME'] == row.SCH_NAME) &
+            #                                                     (total_mission_csv_df['LSTATE'] == row.LSTATE) &
+            #                                                     (total_mission_csv_df['WEBSITE'] == row.WEBSITE)]))
+            continue  # continue to next row in tableau sheet
+        try:
+            # replace empty 'MISSION' column value of the current row in tableau sheet with
+            # mission statement from the matched record in mission statement result sheet
+            tableau_csv_df.at[row.Index, 'MISSION'] = total_mission_csv_df.at[mission_idx, 'MISSION']
+            # print("mission stmt: {}".format(total_mission_csv_df.iloc[mission_idx]))
+            # print("tableau record: {}".format(tableau_csv_df.iloc[row.Index]))
+        except KeyError:
+            traceback.print_exc()
+            print("mission stmt: {}".format(total_mission_csv_df.iloc[mission_idx]))
+            print("tableau record: {}".format(tableau_csv_df.iloc[row.Index]))
+            exit(-1)
+        except ValueError:
+            traceback.print_exc()
+            tableau_csv_df['MISSION'] = tableau_csv_df['MISSION'].astype(str)
+            tableau_csv_df.at[row.Index, 'MISSION'] = total_mission_csv_df[mission_idx, 'MISSION']
+
+    tableau_csv_df.to_csv(join(tableau_dir, tableau_file[:-4]+'_w_Mission.csv'), index=False)  # write to file
+
+
 if __name__ == '__main__':
     # uncomment desired function call and replace parameter(s)
     # according to each function's description
@@ -135,4 +197,6 @@ if __name__ == '__main__':
     #                    '/Users/jhp/Projects/MSU/schooltext/mission/school_list', state_codes)
     # gen_final_results('/Users/jhp/Projects/MSU/schooltext/mission/result',
     #                   '/Users/jhp/Projects/MSU/schooltext/mission/result/final')
-    gen_final_etas('/Users/jhp/Projects/MSU/schooltext/mission/result/logs')
+    # gen_final_etas('/Users/jhp/Projects/MSU/schooltext/mission/result/logs')
+    add_mission_stmt_tableau('/Users/jhp/Projects/MSU/schooltext/mission/result/final',
+                             '/Users/jhp/Projects/MSU/schooltext/data/Final')
