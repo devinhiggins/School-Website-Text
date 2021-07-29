@@ -10,10 +10,13 @@ from selenium import webdriver
 from selenium.common.exceptions import UnexpectedAlertPresentException, NoAlertPresentException, \
     InvalidSessionIdException, InvalidArgumentException
 
-from mission.selenium_pageload import wait_for_page_load
+from selenium_pageload import wait_for_page_load
 
 
 def predict_mission_stmt(url_list, model_directory, tfidf_file, ocsvm_file):
+    """
+    
+    """
     print('Predict mission stmt start', flush=True)
 
     # load pre-trained TF-IDF vector & One-class SVM model

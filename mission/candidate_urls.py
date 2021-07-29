@@ -3,8 +3,8 @@ from collections import deque
 
 from selenium import webdriver
 
-from mission.deny_vip_list import is_deny_listed, has_priority, is_filtered, traverse_req
-from mission.selenium_pageload import wait_for_page_load
+from deny_vip_list import is_deny_listed, has_priority, is_filtered, traverse_req
+from selenium_pageload import wait_for_page_load
 from selenium.common.exceptions import StaleElementReferenceException, TimeoutException, UnexpectedAlertPresentException
 
 
