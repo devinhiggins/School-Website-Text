@@ -30,7 +30,7 @@ We then utilize the model with various heuristics and insights we learned from q
 
 #### 3. Data visualization via Tableau
 
-In this process, Tableau is utilized to visualize the underlying data that is the final result of the above procedures. Please click here to access the visualization *(MSU VPN is required)* 
+In this process, Tableau is utilized to visualize the underlying data that is the final result of the above procedures. Please click [here](https://vis.test.itservices.msu.edu/t/PublicResearch/views/SchoolTextDashboard/SchoolTextDashboard?:iid=1) to access the visualization *(MSU VPN is required)* 
 
 
 ### Requirements
