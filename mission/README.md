@@ -24,7 +24,7 @@ This [component](https://gitlab.msu.edu/adsdatascience/schooltext/-/blob/master/
 
 This [component](https://gitlab.msu.edu/adsdatascience/schooltext/-/blob/master/mission/check_mission_terms.py) uses pharases and keywords from various qualitative researches on the school mission statements with [spaCy](https://spacy.io/)'s [phraseMatcher](https://spacy.io/api/phrasematcher), to efficiently match and calculate match score for each positively predicted mission statement candidate.
 
-#### 4. Select Highest Match Score and Record Mission Statement
+#### 5. Select Highest Match Score and Record Mission Statement
 
 This [component](https://gitlab.msu.edu/adsdatascience/schooltext/-/blob/master/mission/mission_stmt_process.py) sort candidate mission statements in descending order and records highest scored candidate as mission statement
 
