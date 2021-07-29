@@ -3,7 +3,7 @@ import re
 import pandas as pd
 from os.path import join
 from selenium import webdriver
-from mission.candidate_urls import extract_candidate_urls
+from candidate_urls import extract_candidate_urls
 
 
 def link_label_freq(data_dir, sch_url_file, sch_name_file=None):

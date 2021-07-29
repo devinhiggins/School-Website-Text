@@ -6,9 +6,9 @@ from datetime import datetime
 import pandas as pd
 from selenium import webdriver
 
-from mission.check_mission_terms import check_mission_terms
-from mission.predict_mission_stmt import predict_mission_stmt
-from mission.candidate_urls import extract_candidate_urls
+from check_mission_terms import check_mission_terms
+from predict_mission_stmt import predict_mission_stmt
+from candidate_urls import extract_candidate_urls
 
 begin_time = datetime.now()  # record start time for the execution time calculation in the end
 print("Start Time: {}".format(begin_time), flush=True)

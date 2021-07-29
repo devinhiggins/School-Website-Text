@@ -2,7 +2,7 @@ import re
 import spacy
 from spacy.matcher import PhraseMatcher
 
-from mission.deny_vip_list import mission_terms
+from deny_vip_list import mission_terms
 
 
 def check_mission_terms(text_list, miss_terms=mission_terms):
