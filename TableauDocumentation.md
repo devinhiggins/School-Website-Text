@@ -7,9 +7,8 @@
 - Last updated: 6/15/21 at 2:27PM.
 
 ## Data Source(s)
-- US_Schools_Tableau: https://michiganstate.sharepoint.com/:x:/r/sites/MSUITADSDataScience/_layouts/15/Doc.aspx?sourcedoc=%7BB0C920A5-5129-40C1-BB10-96D1BDFB0B1C%7D&file=US_Schools_Tableau.csv&wdLOR=cA634EA8B-EB00-46FF-B6F8-63DE3C9BDDA1&action=default&mobileredirect=true&cid=4a71fa80-d2fc-453e-9d94-4e1318a667e1
+- US_Schools_Tableau_w_Mission: https://michiganstate.sharepoint.com/:x:/r/sites/MSUITADSDataScience/_layouts/15/Doc.aspx?sourcedoc=%7BA813E139-2B56-4DCE-92A0-F045382E4B5F%7D&file=US_Schools_Tableau_w_Mission.csv&action=default&mobileredirect=true
 - hexmap: https://michiganstate.sharepoint.com/:x:/r/sites/MSUITADSDataScience/_layouts/15/Doc.aspx?sourcedoc=%7B8BB184FE-821E-4BD5-BF2D-D43256517BB5%7D&file=hexmap.xlsx&action=default&mobileredirect=true
-- missions: placeholder, this doesn't exist yet but I plan on having all the mission statements consolidated into one file
 
 ### Data Source 1: US_Schools_Tableau
 
