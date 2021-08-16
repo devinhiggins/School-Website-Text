@@ -7,7 +7,7 @@
 - Last updated: 6/15/21 at 2:27PM.
 
 ## Data Source(s)
-- US_Schools_Tableau: https://michiganstate.sharepoint.com/:x:/r/sites/MSUITADSDataScience/_layouts/15/Doc.aspx?sourcedoc=%7BB0C920A5-5129-40C1-BB10-96D1BDFB0B1C%7D&file=US_Schools_Tableau.csv&wdLOR=cA634EA8B-EB00-46FF-B6F8-63DE3C9BDDA1&action=default&mobileredirect=true&cid=4a71fa80-d2fc-453e-9d94-4e1318a667e1
+- US_Schools_Tableau_w_Mission: https://michiganstate.sharepoint.com/:x:/r/sites/MSUITADSDataScience/_layouts/15/Doc.aspx?sourcedoc=%7BA813E139-2B56-4DCE-92A0-F045382E4B5F%7D&file=US_Schools_Tableau_w_Mission.csv&action=default&mobileredirect=true
 - hexmap: https://michiganstate.sharepoint.com/:x:/r/sites/MSUITADSDataScience/_layouts/15/Doc.aspx?sourcedoc=%7B8BB184FE-821E-4BD5-BF2D-D43256517BB5%7D&file=hexmap.xlsx&action=default&mobileredirect=true
 
 ### Data Source 1: US_Schools_Tableau
@@ -31,34 +31,23 @@ __Connection Details:__
 
 __View Name(s):__
 - National Dash
+    - National View
+    - National Dash Info
 - State Dash
-- Web Viewer 
+    - State View
+    - Zip View
+    - Web View
+    - Local Color Key
+    - State Dash Info
 
 __Calculated Fields__
 
 | Field Name | Calculation | Description|
 | --- | --- | --- |
-| _Name of calculation in Tableau_ | _Copy/paste the calculation_ | _Describe in words what the calculation does/is used for_|
 | Percentage of websites | SUM([Number Websites])/SUM([Number of Schools]) * 100 | Calculates the percentage of websites a state has |
-| Has Website? (Color) | IF ATTR([Website]) = "None" THEN 1 
-ELSE 0 
-END | Assigns 0 or 1 depending if the school has a website. Used to assign mark colors  |
-| School Latitude  | SCRIPT_REAL(
-"library('tidygeocoder');
-library('dplyr')
-locations <- data.frame(address = unlist(.arg1));
-latlongs <- locations %>% geocode(address, method = 'arcgis', lat = latitude , long = longitude)
-latlongs$latitude
-",ATTR([Full Address])
-)  | Calculate the latitude of a school based on geocoded address. |
-| School Longitude | SCRIPT_REAL(
-"library('tidygeocoder');
-library('dplyr')
-locations <- data.frame(address = unlist(.arg1));
-latlongs <- locations %>% geocode(address, method = 'arcgis', lat = latitude , long = longitude)
-latlongs$longitude
-",ATTR([Full Address])
-) | Calculates the longitude of a school based on geocoded address. |
+| Has Website? (Color) | IF ATTR([Website]) = "None" THEN 1 ELSE 0 END | Assigns 0 or 1 depending if the school has a website. Used to assign mark colors  |
+| School Latitude  | ```SCRIPT_REAL("library('tidygeocoder'); library('dplyr') locations <- data.frame(address = unlist(.arg1)); latlongs <- locations %>% geocode(address, method = 'arcgis', lat = latitude , long = longitude) latlongs$latitude", ATTR([Full Address]))  | Calculate the latitude of a school based on geocoded address. |
+| School Longitude | SCRIPT_REAL("library('tidygeocoder'); library('dplyr') locations <- data.frame(address = unlist(.arg1)); latlongs <- locations %>% geocode(address, method = 'arcgis', lat = latitude , long = longitude) latlongs$longitude", ATTR([Full Address])) | Calculates the longitude of a school based on geocoded address. |
 | Full Address | [Street] + STR(" ") + [City] + STR(" ") + STR(" ") + [State] + STR(" ") + STR([ZIP Code]) | Used to consolidate location measures.|
 
 __Hierarchies:__
@@ -67,7 +56,8 @@ __Hierarchies:__
 __Sets:__ 
 - State Set: 
 A set that excluded the Bureau of Indian Education (BIE), U.S Virgin Islands (VI), and American Samoa (AS) from the state select filter. 
-BIE is an institution across the country. VI and AS had issues regarding the geocoding and were hidden. 
+BIE is an institution across the country and datapoints under jurisdiction still appear with regular state filters. VI and AS had issues 
+regarding the geocoding and were hidden. 
 
 __Groups:__
 - None were used.
