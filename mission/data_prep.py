@@ -6,7 +6,7 @@ from shutil import copyfile
 import pandas as pd
 
 
-def gen_execute_sheets(data_dir, out_dir, state_code_list, percent=20, max_num=250):
+def gen_execute_sheets(data_dir, out_dir, state_code_list, prev_res_dir=None, percent=20, max_num=250):
     """
     Generate execution plan (batch data sheets) per state
 
@@ -17,27 +17,48 @@ def gen_execute_sheets(data_dir, out_dir, state_code_list, percent=20, max_num=2
 
         state_code_list (list[str]): State codes that needs processing
 
+        prev_res_dir (str): Path to previously processed school lists
+
         percent (int, default=20): How many records you want to process in percentage
 
         max_num (int, default=250): How many records in each batch
     """
     for state in state_code_list:  # iterate states of interest
+        prev_res_csv = None
+        if prev_res_dir is not None:
+            # import previously processed schools
+            prev_res_csv = pd.read_csv(join(prev_res_dir, state+'_mission_result.csv'))
+            print('{} State, {} Schools processed already'.format(state, len(prev_res_csv)))
         # use Tableau sheets (NCES sheets are larger and unnecessary)
         sch_csv = pd.read_csv(join(data_dir, state+'_Schools_Tableau.csv'))
-        # calculate required number of record based on percentage
-        req_num = round(len(sch_csv)*percent/100)
-        print('{} State, {} Rows, {} Req'.format(state, len(sch_csv), req_num))
+        print('{} State, Total {} Schools'.format(state, len(sch_csv)))
 
         sch_name_url = sch_csv[['SCH_NAME', 'WEBSITE']]  # extract school names & homepage URLs
+        sch_name_flt = sch_name_url.copy()
+        if prev_res_dir is not None and prev_res_csv is not None:
+            for row in prev_res_csv.itertuples():
+                try:
+                    # find matching record between the current row in
+                    # previously processed school dataframe versus to-be-processed dataframe
+                    # and retrieve indexes so that it could be dropped
+                    index_matches = sch_name_flt[(sch_name_flt['SCH_NAME'] == row.SCH_NAME) &
+                                                 (sch_name_flt['WEBSITE'] == row.WEBSITE)].index
+                except IndexError:  # no match found
+                    continue  # continue to next row
+                sch_name_flt.drop(index_matches, inplace=True)
+
+        # calculate required number of record based on percentage
+        req_num = round(len(sch_name_flt) * percent / 100)
+        print('{} State, {} Schools needs processing, and {} Required'.format(state, len(sch_name_flt), req_num))
         # generate batch sheets based on req_num and max_num
         if req_num <= max_num:
-            sch_name_url[:req_num+1].to_csv(join(out_dir, state+'_list.csv'), index=False)
+            sch_name_flt[:req_num+1].to_csv(join(out_dir, state+'_list.csv'), index=False)
         else:
             for i in range((req_num//max_num)+1):
                 if req_num >= max_num*(i+1):
-                    temp_df = sch_name_url[max_num*i:max_num*(i+1)]
+                    temp_df = sch_name_flt[max_num*i:max_num*(i+1)]
                 else:
-                    temp_df = sch_name_url[max_num*i:req_num+1]
+                    temp_df = sch_name_flt[max_num*i:req_num+1]
                 temp_df.to_csv(join(out_dir, state + '_list_' + str(i) + '.csv'), index=False)
 
 
@@ -188,15 +209,16 @@ if __name__ == '__main__':
     # uncomment desired function call and replace parameter(s)
     # according to each function's description
     # each function may be called from outside
-    state_codes = [
-        'AK', 'AL', 'AR', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA', 'HI', 'IA', 'ID', 'IL', 'IN', 'KS',
-        'KY', 'LA', 'MA', 'MD', 'ME', 'MI', 'MN', 'MO', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NM', 'NV',
-        'NY', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VA', 'VT', 'WA', 'WI', 'WV', 'WY']
-
-    # gen_execute_sheets('/Users/jhp/Projects/MSU/schooltext/data/Final',
-    #                    '/Users/jhp/Projects/MSU/schooltext/mission/school_list', state_codes)
+    # state_codes = [
+    #     'AK', 'AL', 'AR', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA', 'HI', 'IA', 'ID', 'IL', 'IN', 'KS',
+    #     'KY', 'LA', 'MA', 'MD', 'ME', 'MI', 'MN', 'MO', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NM', 'NV',
+    #     'NY', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VA', 'VT', 'WA', 'WI', 'WV', 'WY']
+    state_codes = ['TX']
+    gen_execute_sheets('/Users/jhp/Projects/MSU/schooltext/data/Final',
+                       '/Users/jhp/Projects/MSU/schooltext/mission/school_list', state_codes,
+                       prev_res_dir='/Users/jhp/Projects/MSU/schooltext/mission/result/final', percent=100)
     # gen_final_results('/Users/jhp/Projects/MSU/schooltext/mission/result',
     #                   '/Users/jhp/Projects/MSU/schooltext/mission/result/final')
     # gen_final_etas('/Users/jhp/Projects/MSU/schooltext/mission/result/logs')
-    add_mission_stmt_tableau('/Users/jhp/Projects/MSU/schooltext/mission/result/final',
-                             '/Users/jhp/Projects/MSU/schooltext/data/Final')
+    # add_mission_stmt_tableau('/Users/jhp/Projects/MSU/schooltext/mission/result/final',
+    #                          '/Users/jhp/Projects/MSU/schooltext/data/Final')
