@@ -85,7 +85,9 @@ for row in data_csv.itertuples():
             print("{}. Elapsed Time: {}".format(school_idx, elapsed_time), flush=True)
         continue
 
-    href_urls = extract_candidate_urls(driver, row.WEBSITE)
+    href_urls, url_mod_flag, new_sch_url = extract_candidate_urls(driver, row.WEBSITE)
+    if url_mod_flag:  # if the school homepage url changed
+        row.WEBSITE = new_sch_url  # update the url
     print('{} - Candidate URL extracted'.format(row.SCH_NAME), flush=True)
     print('{} URLs: {}'.format(row.SCH_NAME, href_urls), flush=True)
     candidate_text = predict_mission_stmt(href_urls, model_dir, tfidf_model, ocsvm_model)
