@@ -29,15 +29,30 @@ def extract_candidate_urls(browser, sch_url, vip_keys=None, label_dic=None):
 
     Returns:
         dequeue[str]: Queue of candidate URLs
+
+        boolean: a flag that denotes URL being updated or not
+
+        str: (updated) school url
     """
     print('{} - Extract Candidate URL Start'.format(sch_url), flush=True)
+    url_changed = False
     try:
         with wait_for_page_load(browser):  # load school homepage
             browser.get(sch_url)
         time.sleep(3)
     except Exception:
-        print("ERROR: Page load exception (extract_candidate_urls/browser.get): {}".format(sch_url), flush=True)
-        return []
+        print("ERROR: 1st Page load exception (extract_candidate_urls/browser.get): {}".format(sch_url), flush=True)
+        print("Try with HTTP")  # trying with http often result auto-forwarding to new URL
+        try:
+            with wait_for_page_load(browser):  # load school homepage
+                browser.get(sch_url.replace('https', 'http'))
+            time.sleep(3)
+        except Exception:
+            print("ERROR: 2nd Page load exception (extract_candidate_urls/browser.get): {}".format(sch_url), flush=True)
+            return []
+
+        url_changed = True
+        sch_url = browser.current_url
 
     try:
         a_tag_list = browser.find_elements_by_xpath('//a')  # get all the a-tag elements
@@ -121,4 +136,4 @@ def extract_candidate_urls(browser, sch_url, vip_keys=None, label_dic=None):
                 label_dic[href_text.lower()] = 1
 
     # return list(href_url_queue)
-    return href_url_queue
+    return href_url_queue, url_changed, sch_url
