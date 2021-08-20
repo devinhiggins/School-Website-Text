@@ -49,7 +49,7 @@ def extract_candidate_urls(browser, sch_url, vip_keys=None, label_dic=None):
             time.sleep(3)
         except Exception:
             print("ERROR: 2nd Page load exception (extract_candidate_urls/browser.get): {}".format(sch_url), flush=True)
-            return []
+            return [], url_changed, sch_url
 
         url_changed = True
         sch_url = browser.current_url
@@ -58,13 +58,13 @@ def extract_candidate_urls(browser, sch_url, vip_keys=None, label_dic=None):
         a_tag_list = browser.find_elements_by_xpath('//a')  # get all the a-tag elements
     except StaleElementReferenceException:
         print("find_element_by_xpath_a stale element exception", flush=True)
-        return []
+        return [], url_changed, sch_url
     except TimeoutException:
         print("find_element_by_xpath_a timeout exception", flush=True)
-        return []
+        return [], url_changed, sch_url
     except UnexpectedAlertPresentException:
         print("find_element_by_xpath_a unexpected alert present exception", flush=True)
-        return []
+        return [], url_changed, sch_url
 
     href_url_queue = deque()  # deque is used to facilitate left insertion to denote priority
 
