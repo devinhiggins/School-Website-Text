@@ -121,7 +121,7 @@ def extract_candidate_urls(browser, sch_url, vip_keys=None, label_dic=None):
                     print('{} - {}: Traverse Activated'.format(href_text, href_val), flush=True)
                     # calling itself with the vip keywords so that same function would
                     # only check for link labels with vip keywords
-                    vip_urls = extract_candidate_urls(driver2, href_val, vip_keys=['mission', 'overview'])
+                    vip_urls, vip_url_chg, vip_sch_url = extract_candidate_urls(driver2, href_val, vip_keys=['mission', 'overview'])
                     driver2.quit()
                     if len(vip_urls) != 0:  # if vip URLs exist
                         for vip_url in vip_urls:
