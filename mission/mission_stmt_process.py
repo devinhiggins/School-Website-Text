@@ -86,8 +86,6 @@ for row in data_csv.itertuples():
         continue
 
     href_urls, url_mod_flag, new_sch_url = extract_candidate_urls(driver, row.WEBSITE)
-    if url_mod_flag:  # if the school homepage url changed
-        row.WEBSITE = new_sch_url  # update the url
     print('{} - Candidate URL extracted'.format(row.SCH_NAME), flush=True)
     print('{} URLs: {}'.format(row.SCH_NAME, href_urls), flush=True)
     candidate_text = predict_mission_stmt(href_urls, model_dir, tfidf_model, ocsvm_model)
@@ -113,7 +111,11 @@ for row in data_csv.itertuples():
             tmp_pt = point
             mission_stmt += key + ' '
     with open(join(data_dir, output_file), 'a') as af:
-        af.write(row.SCH_NAME + ',' + row.WEBSITE + ',' + mission_stmt + '\n')
+        if url_mod_flag:  # if the school homepage url changed
+            # write new url instead
+            af.write(row.SCH_NAME + ',' + new_sch_url + ',' + mission_stmt + '\n')
+        else:
+            af.write(row.SCH_NAME + ',' + row.WEBSITE + ',' + mission_stmt + '\n')
         af.flush()
         print("{} mission stmt is {}".format(row.SCH_NAME, mission_stmt), flush=True)
         elapsed_time = datetime.now() - begin_time
