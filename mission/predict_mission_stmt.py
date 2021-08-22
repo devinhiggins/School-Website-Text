@@ -15,7 +15,20 @@ from selenium_pageload import wait_for_page_load
 
 def predict_mission_stmt(url_list, model_directory, tfidf_file, ocsvm_file):
     """
-    
+    Utilize pre-trained One-Class SVM to classify mission statements
+    from text extracted from candidate webpages
+
+    Args:
+        url_list (list[str]): candidate url list
+
+        model_directory (str): Path to pre-trained classifier models
+
+        tfidf_file (str): Pre-trained TF-IDF vector joblib file
+
+        ocsvm_file (str): Pre-trained One-Class SVM joblib file
+
+    Return:
+        list[str]: Positively predicted text list
     """
     print('Predict mission stmt start', flush=True)
 
