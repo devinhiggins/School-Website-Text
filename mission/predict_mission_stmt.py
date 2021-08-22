@@ -38,8 +38,8 @@ def predict_mission_stmt(url_list, model_directory, tfidf_file, ocsvm_file):
                 browser.get(href_url)
             time.sleep(3)
         except Exception:
-            print("Page load exception: {}".format(href_url), flush=True)
-            traceback.print_exc()
+            print("1st Page load exception: {}".format(href_url), flush=True)
+            # traceback.print_exc()
             browser.quit()  # destroy selenium browser
             browser = webdriver.Firefox()  # re-fork selenium browser
             time.sleep(10)
@@ -48,8 +48,8 @@ def predict_mission_stmt(url_list, model_directory, tfidf_file, ocsvm_file):
                     browser.get(href_url)
                 time.sleep(3)
             except Exception:
-                print("Page load exception: {}".format(href_url), flush=True)
-                traceback.print_exc()
+                print("2nd Page load exception: {}".format(href_url), flush=True)
+                # traceback.print_exc()
                 browser.quit()  # 2nd try failed - pass URL & reset browser
                 browser = webdriver.Firefox()
                 continue
@@ -122,8 +122,8 @@ def predict_mission_stmt(url_list, model_directory, tfidf_file, ocsvm_file):
             # use TF-IDF vector
             test_tfidf = tfidf_vect.transform(processed_txt_list)
         except ValueError:
-            print("ERROR tfidf_vect.transform:", flush=True)
-            traceback.print_exc()
+            print("ERROR ValueError tfidf_vect.transform:", flush=True)
+            # traceback.print_exc()
             print("Original Text List: {}".format(org_txt_list), flush=True)
             print("Processed Text List: {}".format(processed_txt_list), flush=True)
             continue
