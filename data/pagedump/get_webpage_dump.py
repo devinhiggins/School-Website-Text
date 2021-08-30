@@ -6,7 +6,7 @@ import pandas as pd
 from contextlib import contextmanager
 from os.path import join, isdir, isfile
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException, NoAlertPresentException
+from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException, NoAlertPresentException, WebDriverException
 
 state_code = [
     'AK', 'AL', 'AR', 'AS', 'AZ', 'CA', 'CO', 'CT', 'DC', 'DE', 'FL', 'GA', 'GU', 'HI', 'IA', 'ID', 'IL', 'IN',
@@ -110,10 +110,17 @@ def get_homepage_dump(repo_dir, out_dir, state='US'):
                 print("{} - NoAlertPresentException".format(row.WEBSITE))
                 time.sleep(10)
 
+        except WebDriverException as web_drive_exc:
+            print("{} - WebDriverException".format(row.WEBSITE))
+            print(web_drive_exc)
+            continue
+
         with open(join(repo_dir, state+'_dumpcomp.log'), 'a') as wf:
             wf.write(row.SCH_NAME + ',' + row.LCITY + ',' + str(row.LZIP) + '\n')
 
         output_file = row.SCH_NAME + '_' + row.LCITY + '_' + str(row.LZIP) + '.html'
+        keepcharacters = (' ','.','_')
+        output_file = "".join(c for c in output_file if c.isalnum() or c in keepcharacters).rstrip()
         with open(join(out_dir, output_file), 'w') as wf:
             wf.write(driver.page_source)
             wf.flush()
