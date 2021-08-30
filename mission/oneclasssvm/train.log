@@ -1,0 +1,7 @@
+Precision: 1.0
+Recall: 0.6913082437275986
+F1 Score: 0.8174834437086093
+Accuracy: 0.6913082437275986
+
+# Trained with AZ mission stmts
+# Tested on NJ mission stmts

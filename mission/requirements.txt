@@ -1,0 +1,9 @@
+beautifulsoup4
+joblib
+nltk
+numpy
+pandas
+regex
+scikit-learn
+selenium
+spacy
