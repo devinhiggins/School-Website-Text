@@ -86,14 +86,12 @@ def get_homepage_dump(repo_dir, out_dir, state='US'):
         return
 
     completed_set = check_completed_list(repo_dir, state)
-
     source_csv = pd.read_csv(source_file)
     driver = webdriver.Firefox()
 
     for row in source_csv.itertuples():
-        if isdumped((row.SCH_NAME, row.LCITY, row.LZIP), completed_set):
+        if isdumped((row.SCH_NAME, row.LCITY, str(row.LZIP)), completed_set):
             continue
-
         try:
             with wait_for_page_load(driver):
                 driver.get(row.WEBSITE)
