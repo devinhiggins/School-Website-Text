@@ -38,7 +38,7 @@ def wait_for_page_load(browser):
     wait_for(page_has_loaded)
 
 
-def check_completed_list(repo_dir, state):
+def check_list(repo_dir, state, result="success"):
     """
         check webpages that were previously dumped
         Args:
@@ -46,25 +46,34 @@ def check_completed_list(repo_dir, state):
             where the runtime log resides
 
             state (str) : state code (for entire data, it is 'US')
+        Kwargs:
+            result (str) : should be "success" or "error"
         Returns:
             completed_set (set) : completed school tuples set (tuple: SCH_NAME, LCITY, LZIP)
     """
-    completed_set = set()
+    processed_set = set()
+    if result == "success":
+        filename = "_dumpcomp.log"
+    elif result == "error":
+        filename = "_dumpfail.log"
+    else:
+        print("Error, invalid value {} for kwarg 'result'".format(result))
+        return None
     try:
-        with open(join(repo_dir, state+'_dumpcomp.log'), 'r') as rf:
+        with open(join(repo_dir, state + filename), 'r') as rf:
             for line in rf:
                 dumped_school = line.strip('\n').split(',')
-                completed_set.add((dumped_school[0], dumped_school[1], dumped_school[2]))
+                processed_set.add((dumped_school[0], dumped_school[1], dumped_school[2]))
     except IOError:
-        print("Nothing completed previously")
+        print("No results found.")
         pass
 
-    return completed_set
+    return processed_set
 
 
-def isdumped(sch_tuple, completed_set):
+def isdumped(sch_tuple, processed_set):
     # checks tuple existence in the completed_set
-    return True if sch_tuple in completed_set else False
+    return True if sch_tuple in processed_set else False
 
 
 def get_homepage_dump(repo_dir, out_dir, state='US'):
@@ -85,18 +94,27 @@ def get_homepage_dump(repo_dir, out_dir, state='US'):
         print("Invalid state code {} submitted!".format(state))
         return
 
-    completed_set = check_completed_list(repo_dir, state)
+    completed_set = check_list(repo_dir, state)
+    failed_set = check_list(repo_dir, state)
     source_csv = pd.read_csv(source_file)
+    print("File read.")
     driver = webdriver.Firefox()
 
-    for row in source_csv.itertuples():
+    for i, row in enumerate(source_csv.itertuples()):
+        print(i, row.SCH_NAME, row.LCITY, row.LZIP)
         if isdumped((row.SCH_NAME, row.LCITY, str(row.LZIP)), completed_set):
+            print("---- Already completed!")
+            continue
+        elif isdumped((row.SCH_NAME, row.LCITY, str(row.LZIP)), failed_set):
+            print("---- In error set; Skipping!")
             continue
         try:
             with wait_for_page_load(driver):
                 driver.get(row.WEBSITE)
         except TimeoutException:
             print("Timeout Error while loading {} skipping...".format(row.WEBSITE))
+            with open(join(repo_dir, state + '_dumpfail.log'), 'a') as wf:
+                wf.write(row.SCH_NAME + ',' + row.LCITY + ',' + str(row.LZIP) + '\n')
             continue
         except UnexpectedAlertPresentException:
             print("{} - UnexpectedAlertPresent".format(row.WEBSITE))
@@ -111,18 +129,24 @@ def get_homepage_dump(repo_dir, out_dir, state='US'):
         except WebDriverException as web_drive_exc:
             print("{} - WebDriverException".format(row.WEBSITE))
             print(web_drive_exc)
+            with open(join(repo_dir, state + '_dumpfail.log'), 'a') as wf:
+                wf.write(row.SCH_NAME + ',' + row.LCITY + ',' + str(row.LZIP) + '\n')
             continue
 
-        with open(join(repo_dir, state+'_dumpcomp.log'), 'a') as wf:
+        with open(join(repo_dir, state + '_dumpcomp.log'), 'a') as wf:
             wf.write(row.SCH_NAME + ',' + row.LCITY + ',' + str(row.LZIP) + '\n')
 
-        output_file = row.SCH_NAME + '_' + row.LCITY + '_' + str(row.LZIP) + '.html'
-        keepcharacters = (' ','.','_')
+        output_file = str(row.NCESSCH) + '_' + row.SCH_NAME + '_' + row.LCITY + '_' + str(row.LZIP) + '.html'
+        keepcharacters = (' ', '.', '_')
         output_file = "".join(c for c in output_file if c.isalnum() or c in keepcharacters).rstrip()
-        with open(join(out_dir, output_file), 'w') as wf:
-            wf.write(driver.page_source)
-            wf.flush()
 
+        try:
+            with open(join(out_dir, output_file), 'w') as wf:
+                wf.write(driver.page_source)
+                wf.flush()
+        except Exception as e:
+            print(row.SCH_NAME)
+            print(e)
     driver.quit()
 
 
@@ -140,7 +164,7 @@ if __name__ == '__main__':
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), args.repo_dir)
     if not isdir(args.out_dir):
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), args.out_dir)
-    if not isfile(join(args.repo_dir, args.state+'_Schools_Tableau.csv')):
-        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), args.state+'_Schools_Tableau.csv')
+    if not isfile(join(args.repo_dir, args.state + '_Schools_Tableau.csv')):
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), args.state + '_Schools_Tableau.csv')
     # execute page dump
     get_homepage_dump(args.repo_dir, args.out_dir, args.state)

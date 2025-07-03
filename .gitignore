@@ -1,6 +1,9 @@
 # PyCharm
 .idea/
 
+# Data
+*.csv
+
 ### macOS ###
 # General
 .DS_Store
